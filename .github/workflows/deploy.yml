@@ -32,7 +32,6 @@ jobs:
       - name: Npm Install
         run: |
           npm install hexo-cli -g
-          npm install
 
       - name: Set Key
         env:
@@ -49,7 +48,6 @@ jobs:
         run: |
           hexo clean
           hexo generate
-          gulp
           hexo deploy
 
       # - name: Update Profile
