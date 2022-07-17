@@ -1,13 +1,14 @@
 ---
 title: Github Actions 自动化部署hexo
-date: 2022-06-25 21:37:51
-index_img: https://s1.ax1x.com/2022/06/26/jkxsbR.jpg
-banner_img: https://s1.ax1x.com/2022/06/26/jkxrr9.jpg
+index_img: 'https://s1.ax1x.com/2022/06/26/jkxrr9.jpg'
+banner_img: 'https://s1.ax1x.com/2022/06/26/jkxsbR.jpg'
 categories: 博客搭建
 tags:
- - Hexo
- - Github Actions
- - 持续集成
+  - Hexo
+  - Github Actions
+  - 持续集成
+abbrlink: b4e9f04c
+date: 2022-06-25 21:37:51
 ---
 
 使用Github Actions 自动化部署hexo。
@@ -16,7 +17,7 @@ tags:
 
 ## 背景
 
-`hexo`博客需要备份的有两个`branch`，我们可以通过脚本在`hexo deploy`命令时自动备份`hexo`分支，也可以在备份`hexo`时，使用`Github Actions`来自动化部署，这里记录一下自动化部署的过程。
+`hexo`博客需要备份的有两个`branch`，我们可以通过脚本在`hexo deploy`命令时自动备份`hexo`分支，也可以在备份`hexo`时，使用{% label primary @Github Actions %}来自动化部署，这里记录一下自动化部署的过程。
 
 
 
@@ -67,58 +68,60 @@ The key's randomart image is:
 在blog目录文件中新建`.github/workflows/deploy.yml`:
 
 ```yaml
-# This is a basic workflow to help you get started with Actions
-name: Blog deploy
+name: HEXO CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ hexo ]
+    branches:
+    - hexo
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: A job to deploy blog.
+    strategy:
+      matrix:
+        node-version: [14.x]
+
     steps:
-    - name: Checkout
-      uses: actions/checkout@v1
-      with:
-        submodules: true # Checkout private submodules(themes or something else).
-    
-    # Caching dependencies to speed up workflows. (GitHub will remove any cache entries that have not been accessed in over 7 days.)
-    - name: Cache node modules
-      uses: actions/cache@v1
-      id: cache
-      with:
-        path: node_modules
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-    - name: Install Dependencies
-      if: steps.cache.outputs.cache-hit != 'true'
-      run: npm ci
-    
-    # Deploy hexo blog website.
-    - name: Deploy
-      id: deploy
-      uses: sma11black/hexo-action@v1.0.3
-      with:
-        deploy_key: ${{ secrets.DEPLOY_KEY }}
-        user_name: m1ria  # (or delete this input setting to use bot account)
-        user_email: chzaaow@gmail.com  # (or delete this input setting to use bot account)
-        commit_msg: ${{ github.event.head_commit.message }}  # (or delete this input setting to use hexo default settings)
-    # Use the output from the `deploy` step(use for test action)
-    - name: Get the output
-      run: |
-        echo "${{ steps.deploy.outputs.notify }}"
+      - uses: actions/checkout@v1
 
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
 
+      - name: Configuration environment
+        env:
+          HEXO_DEPLOY_PRI: ${{secrets.DEPLOY_KEY}}
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$HEXO_DEPLOY_PRI" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          git config --global user.name "m1ria"
+          git config --global user.email "chzaaow@gmail.com"
+      - name: Install dependencies
+        run: |
+          npm i -g hexo-cli
+          npm i
+      - name: Deploy hexo
+        run: |
+          hexo clean && hexo generate && hexo deploy
 ```
+
+{% note warning %}
+
+on.push指定branch推送时执行工作流。
+
+secrets.DEPLOY_KEY指定秘钥。
+
+{% endnote %}
+
+
 
 ## 配置hexo
 
-在仓库的配置文件`_config.yml`修改：
+在仓库的配置文件{% label primary @_config.yml %}修改：
 
 ```yaml
 # Deployment

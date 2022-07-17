@@ -435,12 +435,12 @@ footer:
   # 页脚第一行文字的 HTML，建议保留 Fluid 的链接，用于向更多人推广本主题
   # HTML of the first line of the footer, it is recommended to keep the Fluid link to promote this theme to more people
   content: '
-    <div>
+    <div style="font-size: 0.85rem">
       <span id="timeDate">载入天数...</span>
       <span id="times">载入时分秒...</span>
-      <script src="/js/Duration.js"></script>
+      <script src="/js/duration.js"></script>
     </div>
-    '
+  '
 
   # 展示网站的 PV、UV 统计数
   # Display website PV and UV statistics
@@ -662,7 +662,7 @@ post:
 
     # CreativeCommons license
     # Options: BY | BY-SA | BY-ND | BY-NC | BY-NC-SA | BY-NC-ND
-    license: 'BY'
+    license: 'BY-SA'
 
     # 显示作者
     author:
@@ -671,7 +671,7 @@ post:
     # 显示发布日期
     # Show post date
     post_date:
-      enable: true
+      enable: false
       format: "LL"
 
     # 显示更新日期
@@ -741,7 +741,7 @@ post:
     # 指定的插件，需要同时设置对应插件的必要参数
     # The specified plugin needs to set the necessary parameters at the same time
     # Options: utterances | disqus | gitalk | valine | waline | changyan | livere | remark42 | twikoo | cusdis | giscus
-    type: disqus
+    type: utterances
 
 
 #---------------------------
@@ -757,11 +757,12 @@ post:
 # Based on GitHub Issues
 # See: https://utteranc.es
 utterances:
-  repo:
-  issue_term: pathname
-  label: utterances
-  theme: github-light
+  repo: m1ria/comments
+  issue_term: url
+  label: ✨
+  theme: boxy-light
   theme_dark: github-dark
+  crossorigin: anonymous
 
 # Disqus
 # 基于第三方的服务，国内用户直接使用容易被墙，建议配合 Disqusjs
@@ -780,11 +781,11 @@ disqus:
 # Based on GitHub Issues
 # See: https://github.com/gitalk/gitalk#options
 gitalk:
-  clientID:
-  clientSecret:
-  repo:
-  owner:
-  admin: ['name']
+  clientID: 3832447438fc9563e880
+  clientSecret: 70d9a65541bae0222482169756b8e51777f128d4
+  repo: comments
+  owner: 'm1ria'
+  admin: ['m1ria']
   language: zh-CN
   labels: ['Gitalk']
   perPage: 10
@@ -1037,15 +1038,6 @@ links:
   custom:
     enable: false
     content: '<hr><p>在下方留言申请加入我的友链，按如下格式提供信息：</p><ul><li>博客名：Fluid</li><li>简介：Fluid 主题官方博客</li><li>链接：https://hexo.fluid-dev.com</li><li>图片：https://hexo.fluid-dev.com/img/favicon.png</li></ul>'
-
-  # 评论插件
-  # Comment plugin
-  comments:
-    enable: false
-    # 指定的插件，需要同时设置对应插件的必要参数
-    # The specified plugin needs to set the necessary parameters at the same time
-    # Options: utterances | disqus | gitalk | valine | waline | changyan | livere | remark42 | twikoo | cusdis | giscus
-    type: disqus
 
 
 #---------------------------
