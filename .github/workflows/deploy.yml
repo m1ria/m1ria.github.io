@@ -14,10 +14,10 @@ jobs:
 
     steps:
       - name: Checkout 
-        uses: m1ria/checkout@v3
+        uses: actions/checkout@v3
         
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: m1ria/setup-node@v3
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
