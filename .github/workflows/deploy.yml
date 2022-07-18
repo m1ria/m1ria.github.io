@@ -2,8 +2,8 @@ name: HEXO CI
 
 on:
   push:
-    branches:
-      - hexo
+    branches: [hexo]
+      
 
 jobs:
   build:
