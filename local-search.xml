@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+  
+  <entry>
+    <title>火车</title>
+    <link href="/archives/6540da8f.html"/>
+    <url>/archives/6540da8f.html</url>
+    
+    <content type="html"><![CDATA[<html><head></head><body><p>在火车上</p><span id="more"></span><p>在火车上。——《台风》</p></body></html>]]></content>
+    
+    
+    <categories>
+      
+      <category>电影</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>电影</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Github Actions 自动化部署hexo</title>
+    <link href="/archives/b4e9f04c.html"/>
+    <url>/archives/b4e9f04c.html</url>
+    
+    <content type="html"><![CDATA[<html><head></head><body><p>使用Github Actions 自动化部署hexo。</p><span id="more"></span><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p><code>hexo</code>博客需要备份的有两个<code>branch</code>，我们可以通过脚本在<code>hexo deploy</code>命令时自动备份<code>hexo</code>分支，也可以在备份<code>hexo</code>时，使用<span class="label label-primary">Github Actions</span>来自动化部署，这里记录一下自动化部署的过程。</p><h2 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h2><h3 id="生成ssh秘钥"><a href="#生成ssh秘钥" class="headerlink" title="生成ssh秘钥"></a>生成ssh秘钥</h3><p>运行命令在<code>.ssh</code>文件夹下生成秘钥<code>hexo-deploy-key</code>和公钥<code>hexo-deploy-key.pub</code>文件。</p><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs bash">➜  ~/.ssh ssh-keygen -f hexo-deploy-key -t rsa -C <span class="hljs-string">"chzaaow@gmail.com"</span><br>Generating public/private rsa key pair.<br>Enter passphrase (empty <span class="hljs-keyword">for</span> no passphrase):<br>Enter same passphrase again:<br>Your identification has been saved <span class="hljs-keyword">in</span> hexo-deploy-key<br>Your public key has been saved <span class="hljs-keyword">in</span> hexo-deploy-key.pub<br>The key fingerprint is:<br>SHA256:oXFz9fhr52svjuDewqCwyUBNPaKRaMu1gaGk8bWrL/s chzaaow@gmail.com<br>The key<span class="hljs-string">'s randomart image is:</span><br><span class="hljs-string">+---[RSA 3072]----+</span><br><span class="hljs-string">|.+o...      .    |</span><br><span class="hljs-string">|==o+o.o    . o   |</span><br><span class="hljs-string">|= +=+...+ . . .  |</span><br><span class="hljs-string">| oo... + +   .   |</span><br><span class="hljs-string">| .  . . S     .  |</span><br><span class="hljs-string">|  ...   .      . |</span><br><span class="hljs-string">|  .o + . o.   o .|</span><br><span class="hljs-string">|  ..+ .  .oo o.+ |</span><br><span class="hljs-string">|  .+E    .o.o.oo=|</span><br><span class="hljs-string">+----[SHA256]-----+</span><br><span class="hljs-string"></span><br></code></pre></td></tr></tbody></table></figure><h3 id="上传公私钥"><a href="#上传公私钥" class="headerlink" title="上传公私钥"></a>上传公私钥</h3><p>复制<code>hexo-deploy-key.pub</code>文件内容，在仓库中<code>Settings &gt; Deploy keys</code>添加Deploy key。</p><p><a href="https://imgtu.com/i/jkHP54"><img src="https://s1.ax1x.com/2022/06/25/jkHP54.jpg" alt="jkHP54.jpg"></a></p><p>复制<code>hexo-deploy-key</code>文件内容，在仓库中<code>Settings &gt; Secrets</code>添加秘钥，名称为<code>DEPLOY_KEY</code>。</p><p><a href="https://imgtu.com/i/jkHer6"><img src="https://s1.ax1x.com/2022/06/25/jkHer6.jpg" alt="jkHer6.jpg"></a></p><h2 id="Workflow配置"><a href="#Workflow配置" class="headerlink" title="Workflow配置"></a>Workflow配置</h2><p>在blog目录文件中新建<code>.github/workflows/deploy.yml</code>:</p><figure class="highlight yaml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">name:</span> <span class="hljs-string">HEXO</span> <span class="hljs-string">CI</span><br><br><span class="hljs-attr">on:</span><br>  <span class="hljs-attr">push:</span><br>    <span class="hljs-attr">branches:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">hexo</span><br><br><span class="hljs-attr">jobs:</span><br>  <span class="hljs-attr">build:</span><br>    <span class="hljs-attr">runs-on:</span> <span class="hljs-string">ubuntu-latest</span><br>    <span class="hljs-attr">strategy:</span><br>      <span class="hljs-attr">matrix:</span><br>        <span class="hljs-attr">node-version:</span> [<span class="hljs-number">14.</span><span class="hljs-string">x</span>]<br><br>    <span class="hljs-attr">steps:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/checkout@v1</span><br><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Use</span> <span class="hljs-string">Node.js</span> <span class="hljs-string">${{</span> <span class="hljs-string">matrix.node-version</span> <span class="hljs-string">}}</span><br>        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/setup-node@v1</span><br>        <span class="hljs-attr">with:</span><br>          <span class="hljs-attr">node-version:</span> <span class="hljs-string">${{</span> <span class="hljs-string">matrix.node-version</span> <span class="hljs-string">}}</span><br><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Configuration</span> <span class="hljs-string">environment</span><br>        <span class="hljs-attr">env:</span><br>          <span class="hljs-attr">HEXO_DEPLOY_PRI:</span> <span class="hljs-string">${{secrets.DEPLOY_KEY}}</span><br>        <span class="hljs-attr">run:</span> <span class="hljs-string">|</span><br><span class="hljs-string">          mkdir -p ~/.ssh/</span><br><span class="hljs-string">          echo "$HEXO_DEPLOY_PRI" &gt; ~/.ssh/id_rsa</span><br><span class="hljs-string">          chmod 600 ~/.ssh/id_rsa</span><br><span class="hljs-string">          ssh-keyscan github.com &gt;&gt; ~/.ssh/known_hosts</span><br><span class="hljs-string">          git config --global user.name "m1ria"</span><br><span class="hljs-string">          git config --global user.email "chzaaow@gmail.com"</span><br><span class="hljs-string"></span>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Install</span> <span class="hljs-string">dependencies</span><br>        <span class="hljs-attr">run:</span> <span class="hljs-string">|</span><br><span class="hljs-string">          npm i -g hexo-cli</span><br><span class="hljs-string">          npm i</span><br><span class="hljs-string"></span>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Deploy</span> <span class="hljs-string">hexo</span><br>        <span class="hljs-attr">run:</span> <span class="hljs-string">|</span><br>          <span class="hljs-string">hexo</span> <span class="hljs-string">clean</span> <span class="hljs-string">&amp;&amp;</span> <span class="hljs-string">hexo</span> <span class="hljs-string">generate</span> <span class="hljs-string">&amp;&amp;</span> <span class="hljs-string">hexo</span> <span class="hljs-string">deploy</span><br></code></pre></td></tr></tbody></table></figure><div class="note note-warning">            <p>on.push指定branch推送时执行工作流。</p><p>secrets.DEPLOY_KEY指定秘钥。</p>          </div><h2 id="配置hexo"><a href="#配置hexo" class="headerlink" title="配置hexo"></a>配置hexo</h2><p>在仓库的配置文件<span class="label label-primary">_config.yml</span>修改：</p><figure class="highlight yaml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># Deployment</span><br><span class="hljs-comment">## Docs: https://hexo.io/docs/one-command-deployment</span><br><span class="hljs-attr">deploy:</span><br>  <span class="hljs-attr">type:</span> <span class="hljs-string">git</span><br>  <span class="hljs-attr">repo:</span> <span class="hljs-string">git@github.com:m1ria/m1ria.github.io.git</span><br>  <span class="hljs-attr">branch:</span> <span class="hljs-string">master</span><br></code></pre></td></tr></tbody></table></figure><h2 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h2><p>检查一下运行成功。</p><p><a href="https://imgtu.com/i/jkxlvQ"><img src="https://s1.ax1x.com/2022/06/26/jkxlvQ.jpg" alt="jkxlvQ.jpg"></a></p></body></html>]]></content>
+    
+    
+    <categories>
+      
+      <category>博客搭建</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Hexo</tag>
+      
+      <tag>Github Actions</tag>
+      
+      <tag>持续集成</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>数据结构</title>
+    <link href="/archives/79666db.html"/>
+    <url>/archives/79666db.html</url>
+    
+    <content type="html"><![CDATA[<html><head></head><body><p>数据结构。</p><span id="more"></span><h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><p>（英语：data structure）是计算机中存储、组织数据的方式。</p><p>数据结构是一种具有一定逻辑关系，在计算机中应用某种存储结构，并且封装了相应操作的数据元素集合。它包含三方面的内容，逻辑关系、存储关系及操作。</p><p>不同种类的数据结构适合于不同种类的应用，而部分甚至专门用于特定的作业任务。例如，计算机网络依赖于路由表运作，B 树高度适用于数据库的封装。</p><h2 id="常见的数据结构"><a href="#常见的数据结构" class="headerlink" title="常见的数据结构"></a>常见的数据结构</h2><ul><li><strong>栈（Stack）：</strong>栈是一种特殊的线性表，它只能在一个表的一个固定端进行数据结点的插入和删除操作。</li><li><strong>队列（Queue）：</strong>队列和栈类似，也是一种特殊的线性表。和栈不同的是，队列只允许在表的一端进行插入操作，而在另一端进行删除操作。</li><li><strong>数组（Array）：</strong>数组是一种聚合数据类型，它是将具有相同类型的若干变量有序地组织在一起的集合。</li><li><strong>链表（Linked List）：</strong>链表是一种数据元素按照链式存储结构进行存储的数据结构，这种存储结构具有在物理上存在非连续的特点。</li><li><strong>树（Tree）：</strong>树是典型的非线性结构，它是包括，2 个结点的有穷集合 K。</li><li><strong>图（Graph）：</strong>图是另一种非线性数据结构。在图结构中，数据结点一般称为顶点，而边是顶点的有序偶对。</li><li><strong>堆（Heap）：</strong>堆是一种特殊的树形数据结构，一般讨论的堆都是二叉堆。</li><li><strong>散列表（Hash table）：</strong>散列表源自于散列函数(Hash function)，其思想是如果在结构中存在关键字和T相等的记录，那么必定在F(T)的存储位置可以找到该记录，这样就可以不用进行比较操作而直接取得所查记录。</li></ul></body></html>]]></content>
+    
+    
+    <categories>
+      
+      <category>算法</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>笔记</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>位运算</title>
+    <link href="/archives/2633a26.html"/>
+    <url>/archives/2633a26.html</url>
+    
+    <content type="html"><![CDATA[<html><head></head><body><p>记录位运算的一些知识点。</p><span id="more"></span><h2 id="位运算"><a href="#位运算" class="headerlink" title="位运算"></a>位运算</h2><p>现代计算机中所有的数据二进制的形式存储，即 0、1 两种状态。位运算是二进制的运算。</p><table><thead><tr><th>符号</th><th>描述</th><th>运算规则</th></tr></thead><tbody><tr><td>&amp;</td><td>与</td><td>两个位都为1时，结果才为1</td></tr><tr><td>|</td><td>或</td><td>两个位都为0时，结果才为0</td></tr><tr><td>^</td><td>异或</td><td>两个位相同为0，相异为1</td></tr><tr><td>~</td><td>取反</td><td>0变1，1变0</td></tr><tr><td>&lt;&lt;</td><td>左移</td><td>各二进位全部左移若干位，高位丢弃，低位补0</td></tr><tr><td>&gt;&gt;</td><td>右移</td><td>各二进位全部右移若干位，对无符号数，高位补0，有符号数，各编译器处理方法不一样，有的补符号位（算术右移），有的补0（逻辑右移）</td></tr></tbody></table><h3 id="与运算的用途："><a href="#与运算的用途：" class="headerlink" title="与运算的用途："></a>与运算的用途：</h3><ol><li>清零</li></ol><p>如果想将一个单元清零，即使其全部二进制位为0，只要与一个各位都为零的数值相与，结果为零。</p><ol start="2"><li>取一个数的指定位</li></ol><p>比如取数 X=1010 1110 的低4位，只需要另找一个数Y，令Y的低4位为1，其余位为0，即Y=0000 1111，然后将X与Y进行按位与运算（X&amp;Y=0000 1110）即可得到X的指定位。</p><ol start="3"><li>判断奇偶</li></ol><p>只要根据最未位是0还是1来决定，为0就是偶数，为1就是奇数。因此可以用if ((a &amp; 1) == 0)代替if (a % 2 == 0)来判断a是不是偶数。</p><h3 id="或运算的用途："><a href="#或运算的用途：" class="headerlink" title="或运算的用途："></a>或运算的用途：</h3><ol><li>常用来对一个数据的某些位设置为1</li></ol><p>比如将数 X=1010 1110 的低4位设置为1，只需要另找一个数Y，令Y的低4位为1，其余位为0，即Y=0000 1111，然后将X与Y进行按位或运算（X|Y=1010 1111）即可得到。</p><h3 id="异或的几条性质"><a href="#异或的几条性质" class="headerlink" title="异或的几条性质:"></a>异或的几条性质:</h3><ol><li><p>交换律</p></li><li><p>结合律 (a^b)^c == a^(b^c)</p></li><li><p>对于任何数x，都有 x^x=0，x^0=x</p></li><li><p>自反性: a^b^b=a^0=a;</p></li></ol><h3 id="异或运算的用途："><a href="#异或运算的用途：" class="headerlink" title="异或运算的用途："></a>异或运算的用途：</h3><ol><li>翻转指定位</li></ol><p>比如将数 X=1010 1110 的低4位进行翻转，只需要另找一个数Y，令Y的低4位为1，其余位为0，即Y=0000 1111，然后将X与Y进行异或运算（X^Y=1010 0001）即可得到。</p><ol start="2"><li>与0相异或值不变</li></ol><p>例如：1010 1110 ^ 0000 0000 = 1010 1110</p><ol start="3"><li>交换两个数</li></ol><h2 id="如何打印32位整数"><a href="#如何打印32位整数" class="headerlink" title="如何打印32位整数"></a>如何打印32位整数</h2><figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">print</span><span class="hljs-params">(<span class="hljs-type">int</span> num)</span>{<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">31</span>; i &gt;= <span class="hljs-number">0</span>; i--) {<br>        System.out.print((num &amp; (<span class="hljs-number">1</span> &lt;&lt; i)) == <span class="hljs-number">0</span> ? <span class="hljs-string">"0"</span> : <span class="hljs-string">"1"</span>);<br>    }<br>    System.out.println();<br><br>}<br></code></pre></td></tr></tbody></table></figure><h2 id="反码和补码"><a href="#反码和补码" class="headerlink" title="反码和补码"></a>反码和补码</h2><h3 id="原码："><a href="#原码：" class="headerlink" title="原码："></a>原码：</h3><p><strong>是最简单的机器数表示法，用最高位表示符号位，其他位存放该数的二进制的绝对值。</strong></p><h3 id="反码"><a href="#反码" class="headerlink" title="反码"></a>反码</h3><p><strong>正数的反码还是等于原码；负数的反码就是它的原码除符号位外，按位取反。</strong></p><p>以带符号位的四位二进制数为例：3是正数，反码与原码相同，则可以表示为0011；-3的原码是1011，符号位保持不变，低三位按位取反，所以-3的反码为1100。</p><h3 id="反码的特点："><a href="#反码的特点：" class="headerlink" title="反码的特点："></a>反码的特点：</h3><ol><li><p>在反码表示中，用符号位表示数值的正负，形式与原码表示相同，即0为正；1为负。 </p></li><li><p>在反码表示中，数值0有两种表示方法。</p></li><li><p>反码的表示范围与原码的表示范围相同。</p></li><li><p><strong>反码表示在计算机中往往作为数码变换的中间环节。</strong></p></li></ol><h3 id="补码"><a href="#补码" class="headerlink" title="补码"></a>补码</h3><p><strong>正数的补码等于它的原码；负数的补码等于反码+1</strong>（这只是一种算补码的方式，多数书对于补码就是这句话）。</p><h3 id="补码的特点："><a href="#补码的特点：" class="headerlink" title="补码的特点："></a><strong>补码的特点：</strong></h3><ol><li>在补码表示中，用符号位表示数值的正负，形式与原码的表示相同，即0为正，1为负。但补码的符号可以看做是数值的一部分参加运算。</li></ol><blockquote><p>正数的补码表示就是其本身，负数的补码表示的实质是把负数映像到正值区域，因此加上一个负数或减去一个正数可以用加上另一个数（负数或减数对应的补码）来代替。<br>从补码表示的符号看，补码中符号位的值代表了数的正确符号，0表示正数，1表示负数；而从映像值来看，符号位的值是映像值的一个数位，因此在补码运算中，符号位可以与数值位一起参加运算。</p></blockquote><ol start="2"><li><p>在补码表示中，数值0只有一种表示方法。</p></li><li><p>负数补码的表示范围比负数原码的表示范围略宽。纯小数的补码可以表示到-1，纯整数的补码可以表示到-2^n。</p></li><li><p>由于补码表示中的符号位可以与数值位一起参加运算，并且可以将减法转换为加法进行运算，简化了运算过程，因此<strong>计算机中均采用补码进行加减运算</strong>。</p></li></ol><h3 id="为什么负数的补码的求法是反码-1"><a href="#为什么负数的补码的求法是反码-1" class="headerlink" title="为什么负数的补码的求法是反码+1"></a>为什么负数的补码的求法是反码+1</h3><p>因为负数的反码加上这个负数的绝对值正好等于1111，在加1，就是10000，也就是四位二进数的模，而负数的补码是它的绝对值的同余数，可以通过模减去负数的绝对值得到它的补码，所以负数的补码就是它的反码+1。</p></body></html>]]></content>
+    
+    
+    <categories>
+      
+      <category>算法</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>笔记</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  
+</search>
