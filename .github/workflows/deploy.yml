@@ -1,9 +1,9 @@
-name: HEXO CI
+name: pages-build-deployment
 
 on:
   push:
     branches:
-    - hexo
+      - hexo
 
 jobs:
   build:
