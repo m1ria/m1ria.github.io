@@ -10,9 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [14]
+        node-version: [14.x]
 
     steps:
+      - uses: m1ria/maria.github.io/checkout@master
       - uses: actions/checkout@v1
 
       - name: Use Node.js ${{ matrix.node-version }}
